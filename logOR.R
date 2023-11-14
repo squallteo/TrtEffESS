@@ -1,4 +1,3 @@
-rm(list=ls())
 library(RBesT)
 library(ggplot2)
 library(tidyverse)
@@ -45,7 +44,7 @@ colnames(out) <- c("Correction", "sizeIU", "nIU", "nSubj")
 out <- out %>% mutate(Correction = as.factor(Correction))
 
 
-png("logOR.png", width = 800, height = 400)
+# png("logOR.png", width = 800, height = 400)
 
 ggplot(out, aes(x=sizeIU, y=nSubj, group=Correction, color=Correction)) + geom_line(size = 1.2) + 
   xlab("Size of Information Unit") + ylab("ESS in Total Number of Subjects") + theme_bw() +
@@ -55,4 +54,4 @@ ggplot(out, aes(x=sizeIU, y=nSubj, group=Correction, color=Correction)) + geom_l
         legend.text = element_text(size = 15)
   )
 
-dev.off()
+# dev.off()
