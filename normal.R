@@ -1,14 +1,10 @@
 library(RBesT)
-
 normal_prior <- mixnorm(c(1, 0, 0.5), param="ms")
-
-sigma1 <- 1.5
-sigma2 <- 1.5
-
-# rand_ratio <- c(2,1)
-rand_ratio <- c(4,2)
-ref_scale <- sqrt(sigma1^2/rand_ratio[1] + sigma2^2/rand_ratio[2])
-
-sigma(normal_prior) <- ref_scale
-
+sigma1 <- 1
+sigma0 <- 1
+rand_ratio <- c(2,1)
+# rand_ratio <- c(4,2)
+# rand_ratio <- c(10,5)
+(var_iu <- sigma1^2/rand_ratio[1] + sigma0^2/rand_ratio[2])
+sigma(normal_prior) <- sqrt(var_iu)
 ess(normal_prior, method = "elir")
