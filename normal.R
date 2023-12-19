@@ -1,5 +1,6 @@
 library(RBesT)
-normal_prior <- mixnorm(c(1, 0, 0.5), param="ms")
+# normal_prior <- mixnorm(c(1, 0, 0.5), param="ms")
+normal_prior <- mixnorm(c(1, 1, 0.5), param="ms")
 sigma1 <- 1
 sigma0 <- 1
 rand_ratio <- c(2,1)
@@ -8,3 +9,4 @@ rand_ratio <- c(2,1)
 (var_iu <- sigma1^2/rand_ratio[1] + sigma0^2/rand_ratio[2])
 sigma(normal_prior) <- sqrt(var_iu)
 ess(normal_prior, method = "elir")
+ess(normal_prior, method = "elir") * sum(rand_ratio)
