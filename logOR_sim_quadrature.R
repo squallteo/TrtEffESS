@@ -28,18 +28,19 @@ logOR_ess <- function(theta0, s,
 }
 
 
-theta0 <- 0.4
-s <- 0.2
+theta0 <- 0
+s <- 1
 iu_size <- c(20, 10)
 iu_multiplier <- c(1, 5, 10, 20, 40, 50, 60)
 
-correction <- 0.5
-grid_width <- 0.005
+correction <- 0.2
+grid_width <- 0.01
 
 for(m in 1:length(iu_multiplier)){
   rand_ratio <- iu_size * iu_multiplier[m]
-  rr <- logOR_ess(0.4, 0.2, rand_ratio=rand_ratio, correction=correction, grid_width=grid_width)
+  rr <- logOR_ess(theta0, s, rand_ratio=rand_ratio, correction=correction, grid_width=grid_width)
   if(m==1){out <- rr}
   else {out <- rbind(out, rr)}
 }
 out
+# write.csv(out, "out.csv")
