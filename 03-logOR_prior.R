@@ -9,7 +9,7 @@ logOR_prior <- function(theta0, s){
   p1 <- seq(0.01,0.99, 0.0025)
   p0 <- seq(0.01,0.99, 0.0025)
   lordt <- expand_grid(p1, p0) %>% mutate(logOR=log((p1*(1-p0))/(p0*(1-p1)))) %>% 
-    mutate(lor_min=qnorm(0.0025,theta0,s), lor_max=qnorm(1-0.0025, theta0, s)) %>%
+    mutate(lor_min=qnorm(0.01,theta0,s), lor_max=qnorm(1-0.01, theta0, s)) %>%
     mutate(surface=(logOR>=lor_min & logOR<=lor_max), density=dnorm(logOR, theta0, s))
   
   lordt_int <- lordt %>% filter(surface) 
@@ -26,7 +26,7 @@ logOR_prior <- function(theta0, s){
 }
 
 
-(plot1 <- logOR_prior(theta0=0.4, s=0.2))
+(plot1 <- logOR_prior(theta0=0.4, s=0.5))
 (plot2 <- logOR_prior(theta0=0, s=1))
 
 # png("logOR_prior.png", width = 800, height = 400)
