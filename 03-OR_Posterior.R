@@ -34,7 +34,7 @@ OR_ess <- function(muvec, covmat,
 
 theta0 <- 0.4
 s <- 0.5
-mu0 <- -1
+mu0 <- -0.4
 m0 <- 2
 corr <- -0.8
 muvec <- c(mu0, theta0)
@@ -43,7 +43,7 @@ covmat <- matrix(c(m0^2, corr*m0*s, corr*m0*s, s^2), 2, 2)
 iu_size <- c(20, 10)
 iu_multiplier <- c(50)
 
-correction <- 0.5
+correction <- -0.8
 grid_width <- 0.01
 
 rand_ratio <- iu_size * iu_multiplier
@@ -52,7 +52,7 @@ prior_ESS <- OR_ess(muvec, covmat, rand_ratio=rand_ratio, correction=correction,
 #####################################
 #####################################
 source("03-OR_Newton.R")
-nsim <- 30
+nsim <- 5
 n1 <- 100; n0 <- 50
 p1 <- 0.5; p0 <- 0.4
 
