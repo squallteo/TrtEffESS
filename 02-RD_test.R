@@ -28,8 +28,8 @@ RD_ess <- function(muvec, covmat,
 
 theta0 <- 0.3
 s <- 0.1
-mu0 <- -1
-m0 <- 2
+mu0 <- -0.5
+m0 <- 0.7
 corr <- -0.8
 muvec <- c(mu0, theta0)
 covmat <- matrix(c(m0^2, corr*m0*s, corr*m0*s, s^2), 2, 2)
@@ -40,6 +40,8 @@ grid_width <- 0.005
 
 rand_ratio <- iu_size * iu_multiplier
 prior_ESS <- RD_ess(muvec, covmat, rand_ratio=rand_ratio, correction=correction, grid_width=grid_width)
+
+sum(prior_ESS[[3]]$transden)*grid_width^2
 
 prior_ESS[[3]] %>%   
   ggplot(aes(x=p0,y=p1,fill=var_iu)) + geom_tile() +
@@ -52,16 +54,6 @@ prior_ESS[[3]] %>%
         legend.title = element_text(size = 15)
   )
 
-prior_ESS[[3]] %>%   
-  ggplot(aes(x=p0,y=p1,fill=bvnden)) + geom_tile() +
-  scale_fill_gradient(low="blue", high="orange") + 
-  geom_abline(slope=1,intercept=0, color="black", linewidth=2, linetype="dashed") + 
-  xlab("Control Rate p0") + ylab("Treatment Rate p1") + 
-  theme(axis.text = element_text(size = 15),
-        axis.title = element_text(size = 12),
-        legend.text = element_text(size = 15),
-        legend.title = element_text(size = 15)
-  )
 
 prior_ESS[[3]] %>%   
   ggplot(aes(x=p0,y=p1,fill=transden)) + geom_tile() +
@@ -95,6 +87,8 @@ post_covmat <- solve(Mmat)
 
 tt <- RD_ess(c(post_meanvec), post_covmat, rand_ratio=rand_ratio, correction=correction, grid_width=grid_width)
 
+sum(tt[[3]]$transden)*grid_width^2
+
 tt[[3]] %>%   
   ggplot(aes(x=p0,y=p1,fill=transden)) + geom_tile() +
   scale_fill_gradient(low="blue", high="orange") + 
@@ -105,3 +99,5 @@ tt[[3]] %>%
         legend.text = element_text(size = 15),
         legend.title = element_text(size = 15)
   )
+
+tt[[2]]

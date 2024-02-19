@@ -18,14 +18,15 @@ RD_ess <- function(muvec, covmat,
   
   rddt <- rddt %>% mutate(J=J, bvnden=bvnden, transden=J*bvnden)
 
-  ess_iu <- (rddt$var_iu %*% rddt$transden) * grid_width^2 / s^2
+  ess_iu <- (rddt$var_iu %*% rddt$transden) * grid_width^2 / covmat[2,2]
+  # ess_iu <- (rddt$var_iu %*% rddt$transden) * grid_width^2 / s^2
   ess_pt <- ess_iu * sum(rand_ratio)
   
   c(ess_iu, ess_pt)
 }
 
 
-theta0 <- 0.2
+theta0 <- 0.4
 s <- 0.1
 mu0 <- -1
 m0 <- 2

@@ -18,15 +18,16 @@ RD_ess <- function(muvec, covmat,
   
   rddt <- rddt %>% mutate(J=J, bvnden=bvnden, transden=J*bvnden)
   
-  ess_iu <- (rddt$var_iu %*% rddt$transden) * grid_width^2 / s^2
+  # ess_iu <- (rddt$var_iu %*% rddt$transden) * grid_width^2 / s^2
+  ess_iu <- (rddt$var_iu %*% rddt$transden) * grid_width^2 / covmat[2,2]
   ess_pt <- ess_iu * sum(rand_ratio)
   
-  # c(ess_iu, ess_pt)
-  return(list(ess_iu, ess_pt, rddt))
+  c(ess_iu, ess_pt)
+  # return(list(ess_iu, ess_pt, rddt))
 }
 
-
-theta0 <- 0.3
+#prior
+theta0 <- 0.4
 s <- 0.1
 mu0 <- -1
 m0 <- 2
@@ -43,9 +44,11 @@ prior_ESS <- RD_ess(muvec, covmat, rand_ratio=rand_ratio, correction=correction,
 ##########################
 ##########################
 source("02-RD_Newton.R")
+
+
 nsim <- 100
-n1 <- 80; n0 <- 40
-p1 <- 0.75; p0 <- 0.4
+n1 <- 1000; n0 <- 500
+p1 <- 0.65; p0 <- 0.4
 
 for(sim in 1:nsim){
   y1 <- rbinom(1, n1, p1); y0 <- rbinom(1, n0, p0)
@@ -68,4 +71,4 @@ for(sim in 1:nsim){
 
 prior_ESS
 colMeans(out)
-colMeans(out) - prior_ESS
+colMeans(out) - prior_ESS - n1 - n0
