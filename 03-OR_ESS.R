@@ -41,10 +41,10 @@ muvec <- c(mu0, theta0)
 covmat <- matrix(c(m0^2, corr*m0*s, corr*m0*s, s^2), 2, 2)
 
 iu_size <- c(20, 10)
-iu_multiplier <- c(1, 5, 10, 20, 40, 50, 60)
+iu_multiplier <- c(40, 50, 60)
 
 correction <- 0.5
-grid_width <- 0.01
+grid_width <- 0.005
 
 
 
