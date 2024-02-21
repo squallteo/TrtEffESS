@@ -55,6 +55,38 @@ plot_prior_bin <- function(meanvec, covmat, emtype=c("rd","or"), IU, VarIU=FALSE
   
 }
 
+#calculate the ESS
+ess_bin <- function(meanvec, covmat, emtype=c("rd","or"), IU, VarIU=FALSE, grid_width=0.005){
+  p1 <- seq(grid_width,1-grid_width, grid_width)
+  p0 <- seq(grid_width,1-grid_width, grid_width)
+  
+  if(emtype=="rd"){
+    rddt <- expand_grid(p1, p0) %>% 
+      mutate(lp0=log(p0/(1-p0)), RD=p1-p0, 
+             var_iu=p1*(1-p1)/IU[1] + p0*(1-p0)/IU[2])
+    J <- with(rddt, 1/(p0*(1-p0)))
+    tt <- with(rddt, cbind(lp0, RD))
+    bvnden <- dmvnorm(tt, mean=meanvec, sigma=covmat)
+    rddt <- rddt %>% mutate(J=J, bvnden=bvnden, transden=J*bvnden)
+    ess_iu <- (rddt$var_iu %*% rddt$transden) * grid_width^2 / covmat[2,2]
+  }
+  
+  if(emtype=="or"){
+    lordt <- expand_grid(p1, p0) %>% 
+      mutate(lp0=log(p0/(1-p0)), lp1=log(p1/(1-p1)), logOR=lp1 - lp0,
+             var_iu=1/(IU[1]*p1*(1-p1)) + 1/(IU[2]*p0*(1-p0))
+      )
+    J <- with(lordt, 1/(p0*(1-p0)*p1*(1-p1)))
+    tt <- with(lordt, cbind(lp0, logOR))
+    bvnden <- dmvnorm(tt, mean=meanvec, sigma=covmat)
+    lordt <- lordt %>% mutate(J=J, bvnden=bvnden, transden=J*bvnden)
+    ess_iu <- (lordt$var_iu %*% lordt$transden) * grid_width^2 / covmat[2,2]
+  }
+  
+  ess_pt <- ess_iu * sum(IU)
+  return(c(ess_iu, ess_pt))
+}
+
 #fit the reparameterized models
 reparfit_bin <- function(n, y, emtype=c("rd","or"), initial_guess, tolerance = 1e-5, max_iter = 100){
   if(emtype=="rd"){
