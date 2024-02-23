@@ -8,7 +8,7 @@ source("00-Functions.R")
 theta0 <- 0.4
 s <- 0.1
 mu0 <- -1
-m0 <- 2
+m0 <- 1
 corr <- -0.8
 prior_mean <- c(mu0, theta0)
 prior_covmat <- matrix(c(m0^2, corr*m0*s, corr*m0*s, s^2), 2, 2)
@@ -19,7 +19,7 @@ iu_multiplier <- c(1)
 
 grid_width <- 0.001
 
-# plot_prior_bin(prior_mean, prior_covmat, emtype = "rd", IU = c(2,1), VarIU = F)
+plot_prior_bin(prior_mean, prior_covmat, emtype = "rd", IU = c(2,1), VarIU = F)
 
 for(m in 1:length(iu_multiplier)){
   rand_ratio <- iu_size * iu_multiplier[m]
@@ -35,7 +35,7 @@ out_prior
 set.seed(712)
 
 nsim <- 100
-n1 <- 200; n0 <- 100
+n1 <- 10000; n0 <- 5000
 p1 <- 0.65; p0 <- 0.4
 
 for(sim in 1:nsim){

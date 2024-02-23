@@ -24,32 +24,62 @@ plot_prior_bin <- function(meanvec, covmat, emtype=c("rd","or"), IU, VarIU=FALSE
   }
   
   plot1 <- 
-  plotdt %>% 
-  ggplot(aes(x=p0,y=p1,fill=transden)) + geom_tile() +
-    scale_fill_gradient(low="blue", high="orange") + 
-    geom_abline(slope=1,intercept=0, color="black", linewidth=2, linetype="dashed") + 
-    xlab("Control Rate p0") + ylab("Treatment Rate p1") + 
-    ggtitle("Induced Joint Density of (p0, p1)") +
+    plotdt %>%
+    ggplot(aes(x=p0,y=p1,z=transden)) + geom_raster(aes(fill=transden)) +
+    geom_contour(color="white") +
+    scale_fill_gradient(low="cornflowerblue", high="red") +
+    geom_abline(slope=1,intercept=0, color="black", linewidth=2, linetype="dashed") +
+    xlab("Control Rate p0") + ylab("Treatment Rate p1") +
+    scale_x_continuous(expand = c(0, 0), breaks = seq(0,1,0.1)) +
+    scale_y_continuous(expand = c(0, 0), breaks = seq(0,1,0.1)) +
+    ggtitle("Induced Joint Density of (p0, p1)") + guides(fill=guide_legend(title="Density"))
+  theme_bw() +
     theme(axis.text = element_text(size = 15),
           axis.title = element_text(size = 12),
           legend.text = element_text(size = 15),
           legend.title = element_text(size = 15)
     )
+  # plotdt %>% 
+  # ggplot(aes(x=p0,y=p1,fill=transden)) + geom_tile() +
+  #   scale_fill_gradient(low="blue", high="orange") + 
+  #   geom_abline(slope=1,intercept=0, color="black", linewidth=2, linetype="dashed") + 
+  #   xlab("Control Rate p0") + ylab("Treatment Rate p1") + 
+  #   ggtitle("Induced Joint Density of (p0, p1)") +
+  #   theme(axis.text = element_text(size = 15),
+  #         axis.title = element_text(size = 12),
+  #         legend.text = element_text(size = 15),
+  #         legend.title = element_text(size = 15)
+  #   )
   print(plot1)
   
   if(VarIU){
     plot2 <- 
-    plotdt %>% 
-      ggplot(aes(x=p0,y=p1,fill=var_iu)) + geom_tile() +
-      scale_fill_gradient(low="blue", high="orange") + 
-      geom_abline(slope=1,intercept=0, color="black", linewidth=2, linetype="dashed") + 
-      xlab("Control Rate p0") + ylab("Treatment Rate p1") + 
-      ggtitle("Variance of IU") +
+      plotdt %>%
+      ggplot(aes(x=p0,y=p1,z=var_iu)) + geom_raster(aes(fill=var_iu)) +
+      geom_contour(color="white") +
+      scale_fill_gradient(low="cornflowerblue", high="red") +
+      geom_abline(slope=1,intercept=0, color="black", linewidth=2, linetype="dashed") +
+      xlab("Control Rate p0") + ylab("Treatment Rate p1") +
+      scale_x_continuous(expand = c(0, 0), breaks = seq(0,1,0.1)) +
+      scale_y_continuous(expand = c(0, 0), breaks = seq(0,1,0.1)) +
+      ggtitle("Variance of IU") + guides(fill=guide_legend(title="Variance"))
+    theme_bw() +
       theme(axis.text = element_text(size = 15),
             axis.title = element_text(size = 12),
             legend.text = element_text(size = 15),
             legend.title = element_text(size = 15)
       )
+    # plotdt %>% 
+    #   ggplot(aes(x=p0,y=p1,fill=var_iu)) + geom_tile() +
+    #   scale_fill_gradient(low="blue", high="orange") + 
+    #   geom_abline(slope=1,intercept=0, color="black", linewidth=2, linetype="dashed") + 
+    #   xlab("Control Rate p0") + ylab("Treatment Rate p1") + 
+    #   ggtitle("Variance of IU") +
+    #   theme(axis.text = element_text(size = 15),
+    #         axis.title = element_text(size = 12),
+    #         legend.text = element_text(size = 15),
+    #         legend.title = element_text(size = 15)
+    #   )
     print(plot2)
   }
   
