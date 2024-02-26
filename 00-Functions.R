@@ -1,5 +1,5 @@
 #visualize the bivariate normal prior
-plot_prior_bin <- function(meanvec, covmat, emtype=c("rd","or"), IU, VarIU=FALSE, grid_width=0.005){
+plot_prior_bin <- function(meanvec, covmat, emtype=c("rd","or","rr"), IU, VarIU=FALSE, grid_width=0.005){
   p1 <- seq(grid_width,1-grid_width, grid_width)
   p0 <- seq(grid_width,1-grid_width, grid_width)
   
@@ -23,6 +23,16 @@ plot_prior_bin <- function(meanvec, covmat, emtype=c("rd","or"), IU, VarIU=FALSE
     plotdt <- plotdt %>% mutate(J=J, bvnden=bvnden, transden=J*bvnden)
   }
   
+  if(emtype=="rr"){
+    plotdt <- expand_grid(p1, p0) %>% 
+      mutate( lp0=log(p0/(1-p0)), logRR=log(p1) - log(p0),
+              var_iu=(1-p1)/(IU[1]*p1) + (1-p0)/(IU[2]*p0) )
+    J <- with(plotdt, 1/(p0*(1-p0)*p1))
+    tt <- with(plotdt, cbind(lp0, logRR))
+    bvnden <- dmvnorm(tt, mean=meanvec, sigma=covmat)
+    plotdt <- plotdt %>% mutate(J=J, bvnden=bvnden, transden=J*bvnden)
+  }
+  
   plot1 <- 
     plotdt %>%
     ggplot(aes(x=p0,y=p1,z=transden)) + geom_raster(aes(fill=transden)) +
@@ -39,17 +49,6 @@ plot_prior_bin <- function(meanvec, covmat, emtype=c("rd","or"), IU, VarIU=FALSE
           legend.text = element_text(size = 15),
           legend.title = element_text(size = 15)
     )
-  # plotdt %>% 
-  # ggplot(aes(x=p0,y=p1,fill=transden)) + geom_tile() +
-  #   scale_fill_gradient(low="blue", high="orange") + 
-  #   geom_abline(slope=1,intercept=0, color="black", linewidth=2, linetype="dashed") + 
-  #   xlab("Control Rate p0") + ylab("Treatment Rate p1") + 
-  #   ggtitle("Induced Joint Density of (p0, p1)") +
-  #   theme(axis.text = element_text(size = 15),
-  #         axis.title = element_text(size = 12),
-  #         legend.text = element_text(size = 15),
-  #         legend.title = element_text(size = 15)
-  #   )
   print(plot1)
   
   if(VarIU){
@@ -69,17 +68,6 @@ plot_prior_bin <- function(meanvec, covmat, emtype=c("rd","or"), IU, VarIU=FALSE
             legend.text = element_text(size = 15),
             legend.title = element_text(size = 15)
       )
-    # plotdt %>% 
-    #   ggplot(aes(x=p0,y=p1,fill=var_iu)) + geom_tile() +
-    #   scale_fill_gradient(low="blue", high="orange") + 
-    #   geom_abline(slope=1,intercept=0, color="black", linewidth=2, linetype="dashed") + 
-    #   xlab("Control Rate p0") + ylab("Treatment Rate p1") + 
-    #   ggtitle("Variance of IU") +
-    #   theme(axis.text = element_text(size = 15),
-    #         axis.title = element_text(size = 12),
-    #         legend.text = element_text(size = 15),
-    #         legend.title = element_text(size = 15)
-    #   )
     print(plot2)
   }
   
@@ -118,7 +106,7 @@ ess_bin <- function(meanvec, covmat, emtype=c("rd","or"), IU, VarIU=FALSE, grid_
 }
 
 #fit the reparameterized models
-reparfit_bin <- function(n, y, emtype=c("rd","or"), initial_guess, tolerance = 1e-5, max_iter = 100){
+reparfit_bin <- function(n, y, emtype=c("rd","or","rr"), initial_guess, tolerance = 1e-5, max_iter = 100){
   if(emtype=="rd"){
     grad_f <- function(par, n, y) {
       a <- exp(par[1])
@@ -155,6 +143,28 @@ reparfit_bin <- function(n, y, emtype=c("rd","or"), initial_guess, tolerance = 1
     }
   }
   
+  if(emtype=="rr"){
+    grad_f <- function(par, n, y) {
+      a <- exp(par[1])
+      b <- exp(par[1]+par[2])
+      g1 <- y[1] - n[1]*a/(1+a) + y[2]/(1+a) - (n[2]-y[2]) * (b/(1+a)^2) * (1-b/(1+a))^-1
+      g2 <- y[2] - (n[2]-y[2]) * (b/1+a) * (1-b/(1+a))^-1
+      c(g1, g2)
+    }
+    hessian_f <- function(par, n, y) {
+      a <- exp(par[1])
+      b <- exp(par[1]+par[2])
+      
+      tt1 <- (b/(1+a)^2) * (1-b/(1+a))^-2 * (b/(1+a)^2) +
+        (1-b/(1+a))^-1 * (b*(1-a)/(1+a)^3)
+      H11 <- -n[1]*a/(1+a)^2 - y[2]*a/(1+a)^2 - (n[2]-y[2])*tt1
+      tt2 <- (b/(1+a)) * (1-b/(1+a))^-1 + (b/(1+a)) * (1-b/(1+a))^-2 * (b/(1+a))
+      H22 <- -(n[2]-y[2]) * tt2
+      tt3 <- (b/(1+a)^2) * (1-b/(1+a))^-1 + (b/(1+a)) * (1-b/(1+a))^-2 * (b/(1+a)^2)
+      H12 <- -(n[2]-y[2]) * tt3        
+      matrix(c(H11, H12, H12, H22), nrow = 2)
+    }
+  }
   #begin Newton-Raphson
   x <- initial_guess
   iter <- 0
