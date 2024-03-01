@@ -9,8 +9,8 @@ source("00-Functions.R")
 
 theta0 <- 0.4
 s <- 0.5
-mu0 <- -0.25
-m0 <- 1
+mu0 <- -1
+m0 <- 2
 corr <- -0.8
 prior_mean <- c(mu0, theta0)
 prior_covmat <- matrix(c(m0^2, corr*m0*s, corr*m0*s, s^2), 2, 2)
@@ -21,7 +21,7 @@ iu_multiplier <- c(1)
 
 grid_width <- 0.001
 
-plot_prior_bin(prior_mean, prior_covmat, emtype = "or", IU = c(2,1), VarIU = F)
+# plot_prior_bin(prior_mean, prior_covmat, emtype = "or", IU = c(2,1), VarIU = F)
 
 
 
@@ -40,7 +40,7 @@ out_prior
 
 nsim <- 100
 n1 <- 1000; n0 <- 500
-p1 <- 0.65; p0 <- 0.4
+p1 <- 0.02; p0 <- 0.01
 
 for(sim in 1:nsim){
   y1 <- rbinom(1, n1, p1); y0 <- rbinom(1, n0, p0)
