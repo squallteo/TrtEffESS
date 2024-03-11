@@ -38,7 +38,7 @@ out_prior
 set.seed(712)
 
 nsim <- 100
-n1 <- 100000; n0 <- 50000
+n1 <- 1000; n0 <- 500
 p1 <- 0.65; p0 <- 0.4
 
 for(sim in 1:nsim){
