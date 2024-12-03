@@ -1,10 +1,10 @@
 rm(list=ls())
 library(RBesT)
 
-theta0 <- 1
-s <- 0.5
+theta0 <- 0.03
+s <- 0.077
 normal_prior <- mixnorm(c(1, theta0, s), param="ms")
-sigma1 <- 1; sigma0 <- 1
+sigma1 <- 1.2; sigma0 <- 1.2
 rand_ratio <- c(2,1)
 var_iu <- sigma1^2/rand_ratio[1] + sigma0^2/rand_ratio[2]
 sigma(normal_prior) <- sqrt(var_iu)
@@ -12,7 +12,7 @@ sigma(normal_prior) <- sqrt(var_iu)
 
 ############
 n1 <- 200; n0 <- 100
-mean1 <- 6; mean0 <- 4.5
+mean1 <- -1.3; mean0 <- -1.3
 sample1 <- rnorm(n1, mean = mean1, sd = sigma1)
 sample0 <- rnorm(n0, mean = mean0, sd = sigma0)
 

@@ -6,12 +6,20 @@ library(mvtnorm)
 
 source("00-Functions.R")
 
+fit <- reparfit_bin(n = c(245, 241), y = c(107, 112), emtype = "or", initial_guess = c(0,0))
+fit$covariance_matrix[1,2]/sqrt(fit$covariance_matrix[1,1]*fit$covariance_matrix[2,2])
 
-theta0 <- 0.4
-s <- 0.5
-mu0 <- -1
-m0 <- 0.5
-corr <- -0.8
+theta0 <- 0.113
+s <- sqrt(0.0333)
+mu0 <- -0.254
+m0 <- sqrt(0.0166)
+
+# theta0 <- 0.113
+# s <- sqrt(0.1)
+# mu0 <- -0.254
+# m0 <- sqrt(0.025)
+
+corr <- -0.7
 prior_mean <- c(mu0, theta0)
 prior_covmat <- matrix(c(m0^2, corr*m0*s, corr*m0*s, s^2), 2, 2)
 
@@ -38,8 +46,8 @@ out_prior
 set.seed(712)
 
 nsim <- 100
-n1 <- 1000; n0 <- 500
-p1 <- 0.65; p0 <- 0.4
+n1 <- 100; n0 <- 50
+p1 <- 0.45; p0 <- 0.45
 
 for(sim in 1:nsim){
   y1 <- rbinom(1, n1, p1); y0 <- rbinom(1, n0, p0)
